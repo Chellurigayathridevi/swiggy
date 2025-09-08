@@ -17,39 +17,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    echo "Building Docker image..."
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                script {
-                    echo "Stopping old container if running..."
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-                }
+                sh "docker rm -f ${CONTAINER_NAME} || true"
             }
         }
 
         stage('Run New Container') {
             steps {
-                script {
-                    echo "Running new container..."
-                    sh "docker run -d -p ${PORT}:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-                }
+                sh "docker run -d -p ${PORT}:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Swiggy app deployed successfully!"
-            echo "Access it at http://<your-server-ip>:${PORT}"
-        }
-        failure {
-            echo "❌ Build failed. Check logs."
         }
     }
 }
