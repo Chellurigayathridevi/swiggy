@@ -24,12 +24,33 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Stop Old Container') {
             steps {
                 script {
-                    echo "Running Docker container..."
-                    // Stop old container if running
+                    echo "Stopping old container if running..."
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    // Start new container
-                    sh "docker run -d -p
+                }
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                script {
+                    echo "Running new container..."
+                    sh "docker run -d -p ${PORT}:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Swiggy app deployed successfully!"
+            echo "Access it at http://<your-server-ip>:${PORT}"
+        }
+        failure {
+            echo "❌ Build failed. Check logs."
+        }
+    }
+}
 
