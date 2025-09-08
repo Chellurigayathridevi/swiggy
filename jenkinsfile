@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "swiggy-app"
+        DOCKER_IMAGE = "swiggy-app:latest"
+        CONTAINER_NAME = "swiggy-container"
+        PORT = "8080"
+    }
+
+    stages {
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Chellurigayathridevi/swiggy.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker image..."
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    echo "Running Docker container..."
+                    // Stop old container if running
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                    // Start new container
+                    sh "docker run -d -p
+
