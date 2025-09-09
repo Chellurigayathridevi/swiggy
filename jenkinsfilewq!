@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                echo "✅ Jenkinsfile detected successfully!"
+            }
+        }
+    }
+}
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "swiggy-app"
+        DOCKER_IMAGE = "swiggy-app:latest"
+        CONTAINER_NAME = "swiggy-container"
+        PORT = "8080"
+    }
+
+    stages {
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Chellurigayathridevi/swiggy.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh "docker rm -f ${CONTAINER_NAME} || true"
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                sh "docker run -d -p ${PORT}:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+            }
+        }
+    }
+}
+
